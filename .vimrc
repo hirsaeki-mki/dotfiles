@@ -1,10 +1,13 @@
 "vim:set ts=8 sts=2 sw=2 tw=0 
+set encoding=utf-8
+scriptencoding utf-8
+set fileencodings=iso-2022-jp,euc-jp,cp932,utf-8
 "
 " An example for a Japanese version vimrc file.
 " 日本語版のデフォルト設定ファイル(vimrc) - Vim7用試作
 "
 "
-" Last Change: 15-Apr-2016.
+" Last Change: 13-Jul-2017.
 " Maintainer:  RailsInstall <railsinstall@gmail.com>
 "
 " 解説:
@@ -35,6 +38,7 @@
 " サイトローカルな設定($VIM/vimrc_local.vim)があれば読み込む。読み込んだ後に
 " 変数g:vimrc_local_finishに非0な値が設定されていた場合には、それ以上の設定
 " ファイルの読込を中止する。
+"
 if 1 && filereadable($VIM . '/vimrc_local.vim')
   unlet! g:vimrc_local_finish
   source $VIM/vimrc_local.vim
@@ -278,6 +282,11 @@ nmap g* g*zz
 nmap g# g#zz
 
 "---------------------------------------------------------------------------
+" ファイルフォーマット
+:set noautochdir
+:set fileformats=unix,dos
+
+"---------------------------------------------------------------------------
 " 文字コード設定
 autocmd FileType cvs    :set fileencoding=euc-jp
 autocmd FileType svn    :set fileencoding=utf-8
@@ -429,8 +438,8 @@ NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'kannokanno/previm'
 NeoBundle 'tyru/open-browser.vim'
 NeoBundle 'Konfekt/FastFold'
+NeoBundle 'ujihisa/unite-ssh'
 
-call neobundle#end()
  
 " Required:
 filetype plugin indent on
@@ -518,7 +527,9 @@ let g:eskk#enable_completion = 1
 let g:azik = 1
 let g:eskk#enable_completion = 1
 let g:eskk#tab_select_completion = 1
-"exec "source " . defaultUserRuntimeDir . "/eskk_azik.vim"
+if filereadable(defaultUserRuntimeDir . '/eskk_azik.vim')
+  exec "source " . defaultUserRuntimeDir . "/eskk_azik.vim"
+endif
 
 "===============================
 " vim-operator-surround
@@ -543,6 +554,7 @@ endif
 nmap gx <Plug>(openbrowser-smart-search)
 vmap gx <Plug>(openbrowser-smart-search)
 
+call neobundle#end()
 " 未インストールのプラグインがある場合、インストールするかどうかを尋ねてくれるようにする設定
 " 毎回聞かれると邪魔な場合もあるので、この設定は任意です。
 "
@@ -555,8 +567,6 @@ NeoBundleCheck
 "-----------------------------------------------------------------------
 "  Local Setting--start
 
-set noautochdir
-set fileformats=unix,dos
 au BufRead,BufNewFile *.uws set filetype=uwsc
 autocmd FileType uwsc :set dictionary=~\uwsc.dict
 autocmd FileType text :set tw=0
@@ -605,7 +615,7 @@ function! s:Jq(...)
     else
         let l:arg = a:1
     endif
-    execute "%! jq \"" . l:arg . "\""
+    execute "%! jq " . l:arg
 endfunction
 "json2yaml呼出
 command! -nargs=? J2y call s:J2y(<f-args>)
